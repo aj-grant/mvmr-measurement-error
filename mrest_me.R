@@ -3,13 +3,14 @@
 ################################################################################
 
 #Required inputs are:
-#bxhat: matrix of genetic variant-exposure association estimates (number of rows = number of variants, number of columns = number of exposures)
-#byhat: vector of genetic variant-outcome association estimates
-#sebx: matrix of standard deviations of genetic variant-exposure association estimates
-#seby: vector of standard deviations of genetic variant-outcome association estimates
-#corX: estimated exposure correlation matrix (if unknown, use the function mrest_me)
+#mrob: an object created using the mr_mvinput function in the MendelianRandomization package
+#corX: the estimated exposure correlation matrix. If unknown, use the function mrest_me.
 
-mrest_me_cor = function(bxhat, byhat, sebx, seby, corX, max_iter = 100, no_ini = 1){
+mrest_me_cor = function(mrob, corX, max_iter = 100, no_ini = 1){
+  bxhat = mrob@betaX
+  byhat = mrob@betaY
+  sebx = mrob@betaXse
+  seby = mrob@betaYse
   p = length(byhat)
   K = dim(bxhat)[2]
   S = diag(seby^-2)
@@ -63,7 +64,11 @@ mrest_me_cor = function(bxhat, byhat, sebx, seby, corX, max_iter = 100, no_ini =
   return(list("thest" = th, "l" = l, "Var" = Var))
 }
 
-mrest_me = function(bxhat, byhat, sebx, seby, max_iter = 100, no_ini = 1){
+mrest_me = function(mrob, max_iter = 100, no_ini = 1){
+  bxhat = as.matrix(mrob@betaX)
+  byhat = mrob@betaY
+  sebx = as.matrix(mrob@betaXse)
+  seby = mrob@betaYse
   p = length(byhat)
   K = dim(bxhat)[2]
   S = diag(seby^-2)
